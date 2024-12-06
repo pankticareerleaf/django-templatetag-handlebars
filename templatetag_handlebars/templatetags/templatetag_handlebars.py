@@ -90,7 +90,7 @@ class VerbatimNode(template.Node):
         return output
 
 
-@register.tag
+@register.filter(is_safe=True)
 def verbatim(parser, token):
     text_and_nodes = verbatim_tags(parser, token, 'endverbatim')
     return VerbatimNode(text_and_nodes)
@@ -133,7 +133,7 @@ class HandlebarsNode(VerbatimNode):
         </script>""" % (head_script, output)
 
 
-@register.tag
+@register.filter(is_safe=True)
 def tplhandlebars(parser, token):
     text_and_nodes = verbatim_tags(parser, token, endtagname='endtplhandlebars')
     # Extract template id from token
