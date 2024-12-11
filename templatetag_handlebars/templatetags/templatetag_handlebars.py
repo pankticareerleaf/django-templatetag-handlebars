@@ -29,6 +29,7 @@ def verbatim_tags(parser, token, endtagname):
     like url {% url name %}. {% trans "foo" %} or {% csrf_token %} within.
     """
     text_and_nodes = []
+    parser.tokens.reverse()
     while 1:
         token = parser.tokens.pop(0)
         if token.contents == endtagname:
@@ -60,7 +61,7 @@ def verbatim_tags(parser, token, endtagname):
 
         if token.token_type == template.base.TokenType.VAR:
             text_and_nodes.append('}}')
-
+    parser.tokens.reverse()
     return text_and_nodes
 
 
@@ -90,7 +91,7 @@ class VerbatimNode(template.Node):
         return output
 
 
-@register.filter(is_safe=True)
+@register.tag
 def verbatim(parser, token):
     text_and_nodes = verbatim_tags(parser, token, 'endverbatim')
     return VerbatimNode(text_and_nodes)
@@ -133,7 +134,7 @@ class HandlebarsNode(VerbatimNode):
         </script>""" % (head_script, output)
 
 
-@register.filter(is_safe=True)
+@register.tag
 def tplhandlebars(parser, token):
     text_and_nodes = verbatim_tags(parser, token, endtagname='endtplhandlebars')
     # Extract template id from token
